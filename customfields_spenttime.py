@@ -1,25 +1,17 @@
-import sys
 import re
 import requests
 from docxtpl import DocxTemplate
 import os
 import datetime
 
-if len(sys.argv) > 1:
-    raw_issue_id = sys.argv[1]
-else:
-    raise ValueError("Error: No Issue ID provided. Usage: python script.py <ISSUE_ID>")
-
-match = re.search(r"([a-zA-Z0-9]+-\d+)", raw_issue_id)
-ISSUE_ID = match.group(1) if match else raw_issue_id.strip()
-
-print(f"=== PROCESSING ISSUE: {ISSUE_ID} ===")
-
+# --- CONFIG ---
+ISSUE_ID = "sysdes-33612"
 TOKEN = "perm-ci5oYW1pbGk=.NzctMTM3.2DmnYBuMYzQf04AlOrYtisyZago3Rm"
+
 YOUTRACK_URL = f"https://youtrack.meteocontrol.de/api/issues/{ISSUE_ID}"
 WORKITEMS_URL = f"https://youtrack.meteocontrol.de/api/issues/{ISSUE_ID}/timeTracking/workItems"
 
-TEMPLATE_FILE = r"C:\Users\r.hamili\youtrack-report\modelefinale.docx"
+TEMPLATE_FILE = r"C:\Users\r.hamili\youtrack-report\template.docx"
 OUTPUT_FILE = f"Rapport_{ISSUE_ID}.docx"
 
 headers = {
@@ -27,7 +19,6 @@ headers = {
     "Accept": "application/json"
 }
 
-# Explicitly ask for period presentation and value attributes for customFields
 params = {
     "fields": "summary,spentTime(presentation),customFields(name,value(name,fullName,presentation,text,minutes))"
 }
@@ -61,6 +52,7 @@ def format_minutes_to_display(total_minutes):
         return f"{mins}m"
 
 def get_issue_data():
+    print(f"=== PROCESSING ISSUE: {ISSUE_ID} ===")
     print("Calling Issue API...")
     response = requests.get(YOUTRACK_URL, headers=headers, params=params)
     if response.status_code != 200:
@@ -75,7 +67,6 @@ def get_issue_data():
     subcontractor = "N/A"
     total_spent_time = ""
 
-    # 1. Inspect Custom Fields specifically for "Spent time"
     for field in issue.get("customFields", []):
         name = field.get("name", "")
         val = field.get("value")
@@ -83,7 +74,6 @@ def get_issue_data():
         if not val:
             continue
 
-        # Target YouTrack's sidebar Spent Time field directly
         if name.lower() in ["spent time", "temps passé"]:
             if isinstance(val, dict):
                 total_spent_time = val.get("presentation") or val.get("name") or ""
@@ -103,13 +93,11 @@ def get_issue_data():
         elif name in ["Subcontractor", "Sous-traitant"]:
             subcontractor = extracted_val
 
-    # 2. Root object fallback
     if not total_spent_time:
         spent_time_obj = issue.get("spentTime") or {}
         if isinstance(spent_time_obj, dict):
             total_spent_time = spent_time_obj.get("presentation", "")
 
-    # 3. Work Items extraction & calculation fallback
     work_response = requests.get(WORKITEMS_URL, headers=headers, params={"fields": "date,duration(presentation),text,type(name)"})
     raw_work_items = work_response.json() if work_response.status_code == 200 else []
 
@@ -142,7 +130,6 @@ def get_issue_data():
             "DESCRIPTION": "Aucune donnée de mise en service trouvée."
         })
 
-    # If YouTrack returned an empty string, fallback to summed work items
     if not total_spent_time or total_spent_time.strip() == "":
         total_spent_time = format_minutes_to_display(calculated_total_minutes)
 
@@ -154,9 +141,8 @@ def get_issue_data():
         "Client": client_name,
         "subcontractor": subcontractor,
         "Assignee": nom_assignee,
-        "TotalSpentTime": formatted_spent_time,
-        "TOTALSPENTTIME": formatted_spent_time,
-        "items": items_list
+        "Spent_time": formatted_spent_time,
+        "COMM_SITE": items_list
     }
 
 data = get_issue_data()
@@ -171,4 +157,4 @@ doc = DocxTemplate(TEMPLATE_FILE)
 doc.render(data)
 doc.save(OUTPUT_FILE)
 
-print("File created successfully! Extracted Spent Time:", data.get("TotalSpentTime"))
+print(f"File created successfully: {OUTPUT_FILE} | Spent Time: {data.get('Spent_time')}")
