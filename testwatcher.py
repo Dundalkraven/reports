@@ -159,26 +159,26 @@ def render_report():
     data = get_issue_data()
 
     if not data:
-        print("❌ Failed to retrieve data.")
+        print(" Failed to retrieve data.")
         return
 
     if not os.path.exists(TEMPLATE_FILE):
-        print(f"❌ Template not found: {TEMPLATE_FILE}")
+        print(f" Template not found: {TEMPLATE_FILE}")
         return
 
     try:
         doc = DocxTemplate(TEMPLATE_FILE)
         doc.render(data)
         doc.save(OUTPUT_FILE)
-        print(f"✅ File updated successfully! Extracted Spent Time: {data.get('TotalSpentTime')}")
+        print(f" File updated successfully! Extracted Spent Time: {data.get('TotalSpentTime')}")
     except PermissionError:
-        print(f"⚠️ Permission Error: Please close '{OUTPUT_FILE}' in Word so the script can write to it.")
+        print(f" Permission Error: Please close '{OUTPUT_FILE}' in Word so the script can write to it.")
     except Exception as e:
-        print(f"❌ Error rendering document: {e}")
+        print(f" Error rendering document: {e}")
 
 # --- WATCHER LOOP ---
 if __name__ == "__main__":
-    print(f"👀 Watching template file for changes: {TEMPLATE_FILE}")
+    print(f" Watching template file for changes: {TEMPLATE_FILE}")
     print("Press Ctrl+C to stop watching.")
 
     # Render once on startup
@@ -193,7 +193,7 @@ if __name__ == "__main__":
                 current_mtime = os.path.getmtime(TEMPLATE_FILE)
                 if current_mtime != last_mtime:
                     last_mtime = current_mtime
-                    print(f"\n🔄 Change detected in template file!")
+                    print(f"\n Change detected in template file!")
                     render_report()
     except KeyboardInterrupt:
-        print("\n👋 Stopped watching file.")
+        print("\n Stopped watching file.")
