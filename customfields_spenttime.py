@@ -171,4 +171,4 @@ doc = DocxTemplate(TEMPLATE_FILE)
 doc.render(data)
 doc.save(OUTPUT_FILE)
 
-print("✅ File created successfully! Extracted Spent Time:", data.get("TotalSpentTime"))
+print("File created successfully! Extracted Spent Time:", data.get("TotalSpentTime"))
