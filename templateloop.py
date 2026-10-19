@@ -169,7 +169,7 @@ def main():
         doc = DocxTemplate(TEMPLATE_PATH)
         doc.render(data)
         doc.save(output_path)
-        print(f"🎉 SUCCESS: Finished populating activities! Output saved to -> [{output_path}].")
+        print(f" SUCCESS: Finished populating activities! Output saved to -> [{output_path}].")
     except PermissionError:
         print(f"ERROR: Close '{output_path}' in Word before running this script.")
     except Exception as e:
