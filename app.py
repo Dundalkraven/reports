@@ -85,8 +85,8 @@ def generate_commissioning_report(issue_id):
         work_type_name = ""
         if isinstance(work_type_obj, dict):
             work_type_name = work_type_obj.get("name", "")
-
-        description = item.get("text", "").strip()
+        raw_text = item.get("text")
+        description = str(raw_text or "").strip()
 
         is_commissioning_type = "commissioning" in work_type_name.lower() or "mise en service" in work_type_name.lower()
         has_commissioning_text = "commissioning" in description.lower() or "mise en service" in description.lower()
