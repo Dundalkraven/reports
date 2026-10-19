@@ -136,7 +136,7 @@ def generate_commissioning_report(issue_id):
     doc.render(data)
     doc.save(output_file)
 
-    print("✅ File created successfully:", output_file)
+    print("File created successfully:", output_file)
     return output_file
 
 @app.route('/', methods=['GET'])
@@ -159,7 +159,7 @@ def trigger_report():
             "message": f"Report generated successfully: {output_file}"
         }), 200
     except Exception as e:
-        print("❌ Error generating report:", str(e))
+        print("Error generating report:", str(e))
         return jsonify({"status": "error", "message": str(e)}), 500
 
 if __name__ == "__main__":
