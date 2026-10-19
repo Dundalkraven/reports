@@ -30,7 +30,7 @@ def process_issue(issue_id):
     response = requests.get(youtrack_url, headers=HEADERS, params=PARAMS)
     
     if response.status_code != 200:
-        print(f"❌ Failed to fetch issue: {response.status_code} - {response.text}")
+        print(f" Failed to fetch issue: {response.status_code} - {response.text}")
         return
 
     issue = response.json()
@@ -117,11 +117,11 @@ def process_issue(issue_id):
     doc.render(data)
     doc.save(output_path)
 
-    print(f"✅ Report generated successfully: {output_path}")
+    print(f" Report generated successfully: {output_path}")
 
 
 # --- WATCHER LOOP ---
-print("👀 Listening for generate.txt in Downloads folder...")
+print(" Listening for generate.txt in Downloads folder...")
 while True:
     try:
         if os.path.exists(TRIGGER_FILE):
@@ -134,7 +134,7 @@ while True:
 
             # Cleanup trigger file so it can fire again next time
             os.remove(TRIGGER_FILE)
-            print("🗑️ Cleaned up generate.txt. Waiting for next trigger...")
+            print(" Cleaned up generate.txt. Waiting for next trigger...")
 
     except Exception as e:
         print(f"⚠️ Error: {e}")
