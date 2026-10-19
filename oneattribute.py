@@ -23,10 +23,10 @@ def extract_id_from_url(url):
     match = re.search(r'/issue/([A-Za-z]+-\d+)', url)
     if match:
         issue_id = match.group(1).lower()
-        print(f"🎯 Dynamic ID Extracted from URL: {issue_id}")
+        print(f"Dynamic ID Extracted from URL: {issue_id}")
         return issue_id
     else:
-        print("❌ Error: Valid Issue ID pattern not found in URL link string.")
+        print("Error: Valid Issue ID pattern not found in URL link string.")
         return None
 
 def get_french_label(work_type_obj, description_text):
@@ -62,7 +62,7 @@ def get_issue_data(issue_id):
     try:
         response = requests.get(f"{BASE_URL}/issues/{issue_id}", headers=headers, params=params, timeout=10)
         if response.status_code != 200:
-            print(f"❌ API Error: {response.status_code}")
+            print(f"API Error: {response.status_code}")
             return None
         
         issue = response.json()
@@ -142,12 +142,12 @@ def get_issue_data(issue_id):
                 
             print(f"✔ Successfully mapped {len(context['COMM_SITE'])} chronology records to COMM_SITE payload.")
         else:
-            print(f"❌ Error fetching time tracking items from API: {work_res.status_code}")
+            print(f" Error fetching time tracking items from API: {work_res.status_code}")
 
         return context
 
     except Exception as e:
-        print(f"❌ Processing Error: {e}")
+        print(f" Processing Error: {e}")
         return None
 
 def main():
@@ -162,19 +162,19 @@ def main():
     output_path = f"Rapport_{issue_id}.docx"
 
     if not os.path.exists(TEMPLATE_PATH):
-        print(f"❌ Error: '{TEMPLATE_PATH}' template file missing.")
+        print(f" Error: '{TEMPLATE_PATH}' template file missing.")
         return
 
     try:
         doc = DocxTemplate(TEMPLATE_PATH)
         doc.render(data)
         doc.save(output_path)
-        print(f"🎉 SUCCESS: Document rendered and saved -> [{output_path}].")
+        print(f" SUCCESS: Document rendered and saved -> [{output_path}].")
 
     except PermissionError:
-        print(f"❌ ERROR: Close your output file '{output_path}' in Word before running the script.")
+        print(f" ERROR: Close your output file '{output_path}' in Word before running the script.")
     except Exception as e:
-        print(f"❌ Render Exception: {e}")
+        print(f" Render Exception: {e}")
 
 if __name__ == "__main__":
     main()
