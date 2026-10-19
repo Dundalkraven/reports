@@ -141,4 +141,4 @@ doc = DocxTemplate(TEMPLATE_FILE)
 doc.render(data)
 doc.save(OUTPUT_FILE)
 
-print("✅ File created successfully:", OUTPUT_FILE)
+print("File created successfully:", OUTPUT_FILE)
